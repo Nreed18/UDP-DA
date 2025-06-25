@@ -8,17 +8,17 @@
     <form method="post" action="/admin/update">
         <h2>Input 1</h2>
         <label>Port:</label>
-        <input type="number" name="input1_port" value="{{ config.inputs.input_1.port }}"><br>
+        <input type="number" name="input1_port" value="{{ config.inputs.input_1.port if config.inputs is defined and config.inputs.input_1 is defined else '' }}"><br>
         <label>Outputs (IP:Port per line):</label><br>
-        <textarea name="input1_outputs" rows="5" cols="40">{% for ip, port in config.inputs.input_1.outputs %}{{ ip }}:{{ port }}
-{% endfor %}</textarea>
+        <textarea name="input1_outputs" rows="5" cols="40">{% if config.inputs is defined and config.inputs.input_1 is defined %}{% for ip, port in config.inputs.input_1.outputs %}{{ ip }}:{{ port }}
+{% endfor %}{% endif %}</textarea>
 
         <h2>Input 2</h2>
         <label>Port:</label>
-        <input type="number" name="input2_port" value="{{ config.inputs.input_2.port }}"><br>
+        <input type="number" name="input2_port" value="{{ config.inputs.input_2.port if config.inputs is defined and config.inputs.input_2 is defined else '' }}"><br>
         <label>Outputs (IP:Port per line):</label><br>
-        <textarea name="input2_outputs" rows="5" cols="40">{% for ip, port in config.inputs.input_2.outputs %}{{ ip }}:{{ port }}
-{% endfor %}</textarea>
+        <textarea name="input2_outputs" rows="5" cols="40">{% if config.inputs is defined and config.inputs.input_2 is defined %}{% for ip, port in config.inputs.input_2.outputs %}{{ ip }}:{{ port }}
+{% endfor %}{% endif %}</textarea>
 
         <br><button type="submit">Save Config</button>
     </form>

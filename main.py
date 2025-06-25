@@ -11,7 +11,8 @@ from udp_relay import UDPRelayManager
 CONFIG_FILE = "config.json"
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+if os.path.isdir("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 relay_manager = UDPRelayManager()
@@ -20,13 +21,20 @@ relay_manager = UDPRelayManager()
 async def startup_event():
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as f:
-            config = json.load(f)
-            await relay_manager.load_config(config)
+            try:
+                config = json.load(f)
+                await relay_manager.load_config(config)
+            except Exception as e:
+                print(f"Failed to load config: {e}")
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_dashboard(request: Request):
     stats = relay_manager.get_stats()
-    return templates.TemplateResponse("dashboard.html", {"request": request, "config": relay_manager.config, "stats": stats})
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "config": relay_manager.config,
+        "stats": stats
+    })
 
 @app.post("/admin/update")
 async def update_config(

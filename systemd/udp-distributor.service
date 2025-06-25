@@ -3,7 +3,7 @@ Description=UDP Distributor Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/udp_distributor/main.py
+ExecStart=/opt/udp_distributor/venv/bin/python /opt/udp_distributor/main.py
 WorkingDirectory=/opt/udp_distributor
 Restart=always
 User=nobody
