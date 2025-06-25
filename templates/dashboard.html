@@ -1,33 +1,65 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>UDP Distributor Admin</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>UDP Distributor Admin</h1>
-    <form method="post" action="/admin/update">
-        <h2>Input 1</h2>
-        <label>Port:</label>
-        <input type="number" name="input1_port" value="{{ config.inputs.input_1.port if config.inputs is defined and config.inputs.input_1 is defined else '' }}"><br>
-        <label>Outputs (IP:Port per line):</label><br>
-        <textarea name="input1_outputs" rows="5" cols="40">{% if config.inputs is defined and config.inputs.input_1 is defined %}{% for ip, port in config.inputs.input_1.outputs %}{{ ip }}:{{ port }}
-{% endfor %}{% endif %}</textarea>
 
-        <h2>Input 2</h2>
-        <label>Port:</label>
-        <input type="number" name="input2_port" value="{{ config.inputs.input_2.port if config.inputs is defined and config.inputs.input_2 is defined else '' }}"><br>
-        <label>Outputs (IP:Port per line):</label><br>
-        <textarea name="input2_outputs" rows="5" cols="40">{% if config.inputs is defined and config.inputs.input_2 is defined %}{% for ip, port in config.inputs.input_2.outputs %}{{ ip }}:{{ port }}
-{% endfor %}{% endif %}</textarea>
+    <p><strong>Current Input:</strong> <span style="color:green">{{ current_input }}</span></p>
 
-        <br><button type="submit">Save Config</button>
+    <form method="post" action="/switch-input">
+        <button type="submit" name="input" value="primary">Switch to Primary</button>
+        <button type="submit" name="input" value="backup">Switch to Backup</button>
     </form>
 
-    <h2>Last Sent Timestamps</h2>
-    <ul>
-        {% for key, time in stats.items() %}
-            <li>{{ key }} - {{ time }}</li>
+    <hr>
+
+    <h2>UDP Listener Ports</h2>
+    <form method="post" action="/set-ports">
+        <label>Primary Port:</label>
+        <input type="number" name="primary_port" value="{{ config.input_1.port }}">
+        <label>Backup Port:</label>
+        <input type="number" name="backup_port" value="{{ config.input_2.port }}">
+        <button type="submit">Set Ports</button>
+    </form>
+
+    <hr>
+
+    <h2>Outputs</h2>
+    <form method="post" action="/add-output">
+        <input type="text" name="host" placeholder="Host/IP">
+        <input type="number" name="port" placeholder="Port">
+        <button type="submit">Add Output</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Host</th>
+                <th>Port</th>
+                <th>Last Sent</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for output in config.outputs %}
+            <tr>
+                <td>{{ output.host }}</td>
+                <td>{{ output.port }}</td>
+                <td>{{ stats[output.host ~ ':' ~ output.port]['last_sent'] if stats[output.host ~ ':' ~ output.port] is defined else '—' }}</td>
+                <td>
+                    <form method="post" action="/delete-output">
+                        <input type="hidden" name="host" value="{{ output.host }}">
+                        <input type="hidden" name="port" value="{{ output.port }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 </body>
 </html>
