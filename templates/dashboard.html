@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UDP Distributor Admin</title>
+</head>
+<body>
+    <h1>UDP Distributor Admin</h1>
+    <form method="post" action="/admin/update">
+        <h2>Input 1</h2>
+        <label>Port:</label>
+        <input type="number" name="input1_port" value="{{ config.inputs.input_1.port }}"><br>
+        <label>Outputs (IP:Port per line):</label><br>
+        <textarea name="input1_outputs" rows="5" cols="40">{% for ip, port in config.inputs.input_1.outputs %}{{ ip }}:{{ port }}
+{% endfor %}</textarea>
+
+        <h2>Input 2</h2>
+        <label>Port:</label>
+        <input type="number" name="input2_port" value="{{ config.inputs.input_2.port }}"><br>
+        <label>Outputs (IP:Port per line):</label><br>
+        <textarea name="input2_outputs" rows="5" cols="40">{% for ip, port in config.inputs.input_2.outputs %}{{ ip }}:{{ port }}
+{% endfor %}</textarea>
+
+        <br><button type="submit">Save Config</button>
+    </form>
+
+    <h2>Last Sent Timestamps</h2>
+    <ul>
+        {% for key, time in stats.items() %}
+            <li>{{ key }} - {{ time }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
